@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Autofac.Extras.DynamicProxy" Version="6.0.0" />
+      <PackageReference Include="Castle.Core" Version="4.4.1" />
+      <PackageReference Include="Castle.Core.AsyncInterceptor" Version="1.1.0" />
+      <PackageReference Include="FreeSql" Version="2.3.200" />
+      <PackageReference Include="FreeSql.Repository" Version="2.3.200" />
+      <PackageReference Include="NLog" Version="4.7.7" />
+      <PackageReference Include="NLog.Web.AspNetCore" Version="4.10.0" />
+      <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Sampan.Public\Sampan.Public.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>Sampan.Service.Contract</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\Sampan.Service.Contract.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Sampan.Public\Sampan.Public.csproj" />
+      <ProjectReference Include="..\Sampan.Domain.Shared\Sampan.Domain.Shared.csproj" />
+      <ProjectReference Include="..\Sampan.Domain\Sampan.Domain.csproj" />
+    </ItemGroup>
+
+</Project>

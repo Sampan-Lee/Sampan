@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>Sampan.Domain</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FreeSql" Version="2.3.200" />
+      <PackageReference Include="Longbow.Security.Cryptography" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Sampan.Domain.Shared\Sampan.Domain.Shared.csproj" />
+      <ProjectReference Include="..\Sampan.Infrastructure\Sampan.Infrastructure.csproj" />
+      <ProjectReference Include="..\Sampan.Public\Sampan.Public.csproj" />
+    </ItemGroup>
+
+</Project>
