@@ -33,7 +33,6 @@ namespace Sampan.Public.Permission
                 var modulePermissions =
                     (IDictionary<string, IDictionary<string, string>>)
                     a.GetField("Permissions").GetValue(a);
-
                 foreach (var groupPermission in modulePermissions)
                 {
                     result.AddRange(groupPermission.Value.Select(p =>

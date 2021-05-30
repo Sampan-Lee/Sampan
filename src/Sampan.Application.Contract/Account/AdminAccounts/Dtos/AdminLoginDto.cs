@@ -11,10 +11,5 @@ namespace Sampan.Service.Contract.Account.AdminAccounts
         /// 用户名
         /// </summary>
         public string Name { get; set; }
-
-        /// <summary>
-        /// 是否是管理员
-        /// </summary>
-        public bool IsAdmin { get; set; }
     }
 }

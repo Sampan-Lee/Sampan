@@ -2,6 +2,7 @@ using AutoMapper;
 using Sampan.Domain.System;
 using Sampan.Service.Contract.System.Logs;
 using Sampan.Service.Contract.System.Menus;
+using Sampan.Service.Contract.System.Permissions.Dtos;
 using Sampan.Service.Contract.System.Roles;
 using Sampan.Service.Contract.System.SystemUsers;
 
@@ -32,8 +33,19 @@ namespace Sampan.Application.System.Logs
 
             #region 菜单
 
+            CreateMap<Menu, MenuListDto>()
+                .ForMember(dest => dest.PermissionName,
+                    opt => opt.MapFrom(src => src.Permission.DisplayName)
+                );
+            CreateMap<Menu, MenuDto>();
             CreateMap<CreateMenuDto, Menu>();
-            CreateMap<Menu, UserMenuDto>();
+            CreateMap<UpdateMenuDto, Menu>();
+
+            #endregion
+
+            #region 权限
+
+            CreateMap<Permission, PermissionDto>();
 
             #endregion
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Sampan.Public.Dto;
 
 namespace Sampan.Service.Contract.System.Roles
 {
@@ -9,11 +10,17 @@ namespace Sampan.Service.Contract.System.Roles
     public interface IRoleService : ICrudService<RoleDto, RoleListDto, GetRoleListDto, CreateRoleDto, UpdateRoleDto>
     {
         /// <summary>
-        /// 获取角色权限
+        /// 获取角色字典
+        /// </summary>
+        /// <returns></returns>
+        Task<List<DropdownDto>> GetDictionaryAsync();
+
+        /// <summary>
+        /// 获取角色权限ID
         /// </summary>
         /// <param name="id">角色ID</param>
         /// <returns></returns>
-        Task<List<RolePermissionDto>> GetPermissionAsync(int id);
+        Task<List<int>> GetPermissionAsync(int id);
 
         /// <summary>
         /// 分配角色权限

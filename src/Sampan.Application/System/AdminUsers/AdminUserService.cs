@@ -4,7 +4,9 @@ using FreeSql;
 using Longbow.Security.Cryptography;
 using Sampan.Common.Extension;
 using Sampan.Domain.System;
+using Sampan.Infrastructure.AOP.Transactional;
 using Sampan.Infrastructure.Repository;
+using Sampan.Public.Dto;
 using Sampan.Service.Contract.System.SystemUsers;
 
 namespace Sampan.Application.System.Users
@@ -12,14 +14,14 @@ namespace Sampan.Application.System.Users
     /// <summary>
     /// 用户服务
     /// </summary>
-    public class SystemUserService : CrudService<AdminUser, AdminUserDto, AdminUserListDto, GetAdminUserListDto,
+    public class AdminUserService : CrudService<AdminUser, AdminUserDto, AdminUserListDto, GetAdminUserListDto,
             CreateAdminUserDto, UpdateAdminUserDto>,
         IAdminUserService
     {
         private readonly AdminUserManager _userManager;
         private readonly IRepository<UserRole> _userRoleRepository;
 
-        public SystemUserService(AdminUserManager userManager,
+        public AdminUserService(AdminUserManager userManager,
             IRepository<UserRole> userRoleRepository,
             IRepository<AdminUser> repository) :
             base(repository)
@@ -35,11 +37,28 @@ namespace Sampan.Application.System.Users
         /// <returns></returns>
         protected override ISelect<AdminUser> CreateFilteredQuery(GetAdminUserListDto input)
         {
-            return Repository.Select.IncludeMany(a => a.Roles)
+            return Repository.Include(a => a.CreateUser)
+                .IncludeMany(a => a.Roles)
                 .WhereIf(!input.Name.IsNullOrWhiteSpace(), a => a.Name.Contains(input.Name))
                 .WhereIf(!input.Phone.IsNullOrWhiteSpace(), a => a.Phone.Contains(input.Phone))
-                .WhereIf(input.IsAdmin.HasValue, a => a.IsAdmin == input.IsAdmin.Value)
                 .WhereIf(input.IsEnable.HasValue, a => a.IsEnable == input.IsEnable.Value);
+        }
+
+        /// <summary>
+        /// 请求排序
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        protected override ISelect<AdminUser> ApplySorting(ISelect<AdminUser> query, GetAdminUserListDto input)
+        {
+            if (input.Sort.ToInitialUpper() == nameof(AdminUserListDto.CreateUserName))
+            {
+                query.OrderByIf(true, a => a.CreateUser.Name, input.Asc);
+                return query;
+            }
+
+            return base.ApplySorting(query, input);
         }
 
         /// <summary>
@@ -54,21 +73,62 @@ namespace Sampan.Application.System.Users
             return userListDto;
         }
 
+        public override async Task<AdminUserDto> GetAsync(int id)
+        {
+            var adminUser = await Repository
+                .IncludeMany(a => a.Roles)
+                .Where(a => a.Id == id)
+                .FirstAsync();
+
+            var adminUserDto = Mapper.Map<AdminUserDto>(adminUser);
+            adminUserDto.RoleIds = adminUser.Roles.Select(a => a.Id).ToList();
+
+            return adminUserDto;
+        }
+
         /// <summary>
         /// 创建用户
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
+        [Transactional]
         public override async Task CreateAsync(CreateAdminUserDto input)
         {
             var user = await _userManager.CreateAsync(input.LoginName,
                 input.Password,
                 input.Name,
-                input.Phone,
-                input.IsAdmin
+                input.Phone
             );
-
             await Repository.InsertAsync(user);
+
+            var userRole = input.RoleIds.Select(a => new UserRole
+            {
+                UserId = user.Id,
+                RoleId = a
+            });
+            await _userRoleRepository.InsertAsync(userRole);
+        }
+
+        /// <summary>
+        /// 修改用户信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="input"></param>
+        [Transactional]
+        public override async Task UpdateAsync(int id, UpdateAdminUserDto input)
+        {
+            var user = await Repository.GetAsync(id);
+            await _userManager.ChangeNameAsync(user, input.Name);
+            await _userManager.ChangePhoneAsync(user, input.Phone);
+            await _userManager.ChangeEmailAsync(user, input.Email);
+            await Repository.UpdateAsync(user);
+
+            var assignRoleDto = new AssignRoleDto
+            {
+                UserId = id,
+                RoleIds = input.RoleIds
+            };
+            await AssignRoleAsync(assignRoleDto);
         }
 
         /// <summary>
@@ -78,7 +138,9 @@ namespace Sampan.Application.System.Users
         /// <returns></returns>
         public async Task AssignRoleAsync(AssignRoleDto input)
         {
-            await _userRoleRepository.DeleteAsync(input.UserId);
+            await _userRoleRepository.Where(a => a.UserId == input.UserId)
+                .ToDelete()
+                .ExecuteAffrowsAsync();
 
             var entities = input.RoleIds.Select(a => new UserRole
             {

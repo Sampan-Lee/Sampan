@@ -10,7 +10,7 @@ namespace Sampan.WebApi.Admin.Controllers.System
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(SystemPermission.SystemUser.Default)]
+    [Authorize(SystemPermission.AdminUser.Default)]
     public class UserController : ControllerBase
     {
         private readonly IAdminUserService _service;
@@ -30,14 +30,15 @@ namespace Sampan.WebApi.Admin.Controllers.System
         }
 
         [HttpGet]
-        public async Task<JsonResultModel<PageDto<AdminUserListDto>>> GetAsync([FromQuery] GetAdminUserListDto input)
+        public async Task<JsonResultModel<PageResultDto<AdminUserListDto>>> GetAsync(
+            [FromQuery] GetAdminUserListDto input)
         {
             var result = await _service.GetAsync(input);
             return result.ToSuccess();
         }
 
         [HttpPost]
-        [Authorize(SystemPermission.SystemUser.Create)]
+        [Authorize(SystemPermission.AdminUser.Create)]
         public async Task<JsonResultModel<bool>> CreateAsync([FromBody] CreateAdminUserDto input)
         {
             await _service.CreateAsync(input);
@@ -46,7 +47,7 @@ namespace Sampan.WebApi.Admin.Controllers.System
 
         [HttpPut]
         [Route("{id}")]
-        [Authorize(SystemPermission.SystemUser.Edit)]
+        [Authorize(SystemPermission.AdminUser.Edit)]
         public async Task<JsonResultModel<bool>> UpdateAsync([FromRoute] int id, [FromBody] UpdateAdminUserDto input)
         {
             await _service.UpdateAsync(id, input);
@@ -55,7 +56,7 @@ namespace Sampan.WebApi.Admin.Controllers.System
 
         [HttpDelete]
         [Route("{id}")]
-        [Authorize(SystemPermission.SystemUser.Delete)]
+        [Authorize(SystemPermission.AdminUser.Delete)]
         public async Task<JsonResultModel<bool>> DeleteAsync([FromRoute] int id)
         {
             await _service.DeleteAsync(id);
@@ -64,7 +65,7 @@ namespace Sampan.WebApi.Admin.Controllers.System
 
         [HttpPost]
         [Route("password:reset")]
-        [Authorize(SystemPermission.SystemUser.ResetPassword)]
+        [Authorize(SystemPermission.AdminUser.ResetPassword)]
         public async Task<JsonResultModel<bool>> ResetPasswordAsync([FromBody] ResetPasswordDto input)
         {
             await _service.ResetPasswordAsync(input);
@@ -72,8 +73,18 @@ namespace Sampan.WebApi.Admin.Controllers.System
         }
 
         [HttpPost]
+        [Route("role:assign")]
+        [Authorize(SystemPermission.AdminUser.AssignRole)]
+        public async Task<JsonResultModel<bool>> AssignRoleAsync([FromBody] AssignRoleDto input)
+        {
+            await _service.AssignRoleAsync(input);
+            return true.ToSuccess();
+        }
+
+
+        [HttpPost]
         [Route("isEnable:set")]
-        [Authorize(SystemPermission.SystemUser.SetIsEnable)]
+        [Authorize(SystemPermission.AdminUser.SetIsEnable)]
         public async Task<JsonResultModel<bool>> SetIsEnableAsync([FromBody] SetEnableDto input)
         {
             await _service.SetIsEnableAsync(input);

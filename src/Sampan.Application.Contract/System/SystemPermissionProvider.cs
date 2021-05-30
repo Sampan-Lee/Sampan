@@ -10,7 +10,7 @@ namespace Sampan.Service.Contract.System
         /// <summary>
         /// 模块名称
         /// </summary>
-        public const string Module = "系统管理";
+        public const string Module = "系统设置";
 
         /// <summary>
         /// 权限字典
@@ -19,16 +19,16 @@ namespace Sampan.Service.Contract.System
             new Dictionary<string, IDictionary<string, string>>
             {
                 {
-                    SystemPermission.SystemUser.Default,
+                    SystemPermission.AdminUser.Default,
                     new Dictionary<string, string>
                     {
-                        {SystemPermission.SystemUser.Default, "用户管理"},
-                        {SystemPermission.SystemUser.Create, "创建"},
-                        {SystemPermission.SystemUser.Edit, "编辑"},
-                        {SystemPermission.SystemUser.Delete, "删除"},
-                        {SystemPermission.SystemUser.AssignRole, "分配角色"},
-                        {SystemPermission.SystemUser.ResetPassword, "重置密码"},
-                        {SystemPermission.SystemUser.SetIsEnable, "设置用户状态"},
+                        {SystemPermission.AdminUser.Default, "用户管理"},
+                        {SystemPermission.AdminUser.Create, "创建"},
+                        {SystemPermission.AdminUser.Edit, "编辑"},
+                        {SystemPermission.AdminUser.Delete, "删除"},
+                        {SystemPermission.AdminUser.AssignRole, "分配角色"},
+                        {SystemPermission.AdminUser.ResetPassword, "重置密码"},
+                        {SystemPermission.AdminUser.SetIsEnable, "设置状态"},
                     }
                 },
                 {
@@ -50,7 +50,8 @@ namespace Sampan.Service.Contract.System
                         {SystemPermission.Menu.Create, "创建"},
                         {SystemPermission.Menu.Edit, "编辑"},
                         {SystemPermission.Menu.Delete, "删除"},
-                        {SystemPermission.Menu.BindPermission, "绑定权限"}
+                        {SystemPermission.Menu.BindPermission, "绑定权限"},
+                        {SystemPermission.Menu.SetIsEnable, "设置状态"}
                     }
                 },
                 {

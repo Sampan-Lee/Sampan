@@ -6,7 +6,7 @@ namespace Sampan.Public.Dto
     /// 分页结果集
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PageDto<T> where T : class, IBaseDto
+    public class PageResultDto<T> where T : class, IDto
     {
         /// <summary>
         /// 总数

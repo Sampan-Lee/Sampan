@@ -19,10 +19,10 @@ namespace Sampan.WebExtension.Filter
                 var result = context.ModelState.Keys
                     .SelectMany(key => context.ModelState[key].Errors.Select(x => x.ErrorMessage))
                     .ToList();
-                messageModel.errorMsg = ResultMessage.ValidationError;
+                messageModel.errorMsg = result.FirstOrDefault();
                 messageModel.code = HttpStatusCode.ArgumentError;
                 messageModel.status = false;
-                messageModel.data = result.FirstOrDefault(); //string.Join("|", result);//目前统一转化成字符串显示
+                //messageModel.data = result.FirstOrDefault(); //string.Join("|", result);//目前统一转化成字符串显示
                 context.Result = new ObjectResult(messageModel);
             }
 

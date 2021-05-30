@@ -18,12 +18,7 @@ namespace Sampan.Service.Contract.System.SystemUsers
         public string Phone { get; set; }
 
         /// <summary>
-        /// 是否是超级管理员
-        /// </summary>
-        public bool? IsAdmin { get; set; }
-
-        /// <summary>
-        /// 是否是超级管理员
+        /// 用户状态
         /// </summary>
         public bool? IsEnable { get; set; }
     }

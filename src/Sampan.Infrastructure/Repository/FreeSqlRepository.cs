@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FreeSql;
-using FreeSql.Internal.Model;
 using Sampan.Infrastructure.CurrentUser;
 using Sampan.Public.Entity;
 
@@ -24,6 +21,47 @@ namespace Sampan.Infrastructure.Repository
         {
             _currentUser = currentUser;
         }
+
+        #region 查询构造
+
+        public ISelect<TEntity> Include<TNavigate>(Expression<Func<TEntity, TNavigate>> navigateSelector)
+            where TNavigate : class
+        {
+            return Select.Include(navigateSelector);
+        }
+
+        public ISelect<TEntity> IncludeMany<TNavigate>(
+            Expression<Func<TEntity, IEnumerable<TNavigate>>> navigateSelector, Action<ISelect<TNavigate>> then = null)
+            where TNavigate : class
+        {
+            return Select.IncludeMany(navigateSelector);
+        }
+
+        public Task<Dictionary<TKey, TEntity>> ToDictionaryAsync<TKey>(Func<TEntity, TKey> keySelector,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Select.ToDictionaryAsync(keySelector, cancellationToken);
+        }
+
+        public Task<Dictionary<TKey, TElement>> ToDictionaryAsync<TKey, TElement>(Func<TEntity, TKey> keySelector,
+            Func<TEntity, TElement> elementSelector,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Select.ToDictionaryAsync(keySelector, elementSelector, cancellationToken);
+        }
+
+        public Task<List<TReturn>> ToListAsync<TReturn>(Expression<Func<TEntity, TReturn>> @select,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Select.ToListAsync(@select, cancellationToken);
+        }
+
+        public Task<List<TDto>> ToListAsync<TDto>(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Select.ToListAsync<TDto>(cancellationToken);
+        }
+
+        #endregion
 
         #region 插入数据
 

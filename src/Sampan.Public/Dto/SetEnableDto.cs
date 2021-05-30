@@ -1,20 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Sampan.Service.Contract.System.SystemUsers
+namespace Sampan.Public.Dto
 {
     /// <summary>
-    /// 设置用户状态
+    /// 设置启用/禁用状态
     /// </summary>
     public class SetEnableDto
     {
         /// <summary>
-        /// 用户ID
+        /// 数据ID
         /// </summary>
         [Required]
         public int Id { get; set; }
 
         /// <summary>
-        /// 密码
+        /// 状态
         /// </summary>
         [Required]
         public bool IsEnable { get; set; }

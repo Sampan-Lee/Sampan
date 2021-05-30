@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Sampan.Service.Contract.System.SystemUsers
@@ -10,12 +11,13 @@ namespace Sampan.Service.Contract.System.SystemUsers
         /// <summary>
         /// 登录名
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "登录名不能为空")]
         public string LoginName { get; set; }
 
         /// <summary>
         /// 姓名
         /// </summary>
+        [Required(ErrorMessage = "用户名不能为空")]
         public string Name { get; set; }
 
         /// <summary>
@@ -26,11 +28,17 @@ namespace Sampan.Service.Contract.System.SystemUsers
         /// <summary>
         /// 手机号
         /// </summary>
+        [Required(ErrorMessage = "手机号不能为空")]
         public string Phone { get; set; }
 
         /// <summary>
-        /// 用户身份，是否是管理员
+        /// 邮箱
         /// </summary>
-        public bool? IsAdmin { get; set; }
+        public string Email { get; set; }
+
+        /// <summary>
+        /// 角色ID集合
+        /// </summary>
+        public List<int> RoleIds { get; set; }
     }
 }

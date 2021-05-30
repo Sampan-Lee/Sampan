@@ -19,8 +19,8 @@ namespace Sampan.Application
         ReadSerivce<TEntity, TDto, TListDto, TGetListInput>,
         ICrudService<TDto, TListDto, TGetListInput, TCreateInput, TUpdateInput>
         where TEntity : class, IEntity
-        where TDto : class, IBaseDto
-        where TListDto : class, IBaseDto
+        where TDto : class, IDto
+        where TListDto : class, IDto
         where TGetListInput : GetPageDto
     {
         protected CrudService(IRepository<TEntity> repository) : base(repository)
@@ -44,17 +44,11 @@ namespace Sampan.Application
         /// <param name="id"></param>
         /// <param name="input"></param>
         /// <returns></returns>
-        public virtual Task UpdateAsync(int id, TUpdateInput input)
+        public virtual async Task UpdateAsync(int id, TUpdateInput input)
         {
-            var exist = Repository.Where(a => a.Id == id).AnyAsync().Result;
-            if (exist)
-            {
-                var entity = Mapper.Map<TEntity>(input);
-                entity.Id = id;
-                Repository.UpdateAsync(entity);
-            }
-
-            return Task.CompletedTask;
+            var entity = await Repository.Where(a => a.Id == id).ToOneAsync();
+            Mapper.Map(input, entity);
+            await Repository.UpdateAsync(entity);
         }
 
         /// <summary>

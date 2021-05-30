@@ -33,6 +33,18 @@ namespace Sampan.Service.Contract.System.Menus
         /// <summary>
         /// 路径
         /// </summary>
+        [Required]
         public string Path { get; set; }
+
+        /// <summary>
+        /// 视图组件
+        /// </summary>
+        [Required]
+        public string Component { get; set; }
+
+        /// <summary>
+        /// 路径
+        /// </summary>
+        public string Sort { get; set; }
     }
 }

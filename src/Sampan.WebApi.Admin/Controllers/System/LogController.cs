@@ -29,7 +29,7 @@ namespace Sampan.WebApi.Admin.Controllers.System
         }
 
         [HttpGet]
-        public async Task<JsonResultModel<PageDto<LogListDto>>> GetAsync([FromQuery] GetLogListDto input)
+        public async Task<JsonResultModel<PageResultDto<LogListDto>>> GetAsync([FromQuery] GetLogListDto input)
         {
             var result = await _service.GetAsync(input);
             return result.ToSuccess();

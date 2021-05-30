@@ -13,6 +13,8 @@ namespace Sampan.Application.Authorizes
             #region 管理员用户
 
             CreateMap<AdminUser, AdminLoginDto>();
+            CreateMap<Menu, AdminMenuDto>().ForMember(dest => dest.Title,
+                opt => opt.MapFrom(src => src.Name));
 
             #endregion
 

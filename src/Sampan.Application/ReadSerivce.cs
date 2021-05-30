@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.Internal;
 using FreeSql;
 using Sampan.Common.Extension;
 using Sampan.Infrastructure.Repository;
@@ -21,8 +23,8 @@ namespace Sampan.Application
     public abstract class ReadSerivce<TEntity, TDto, TListDto, TGetListInput> : Service,
         IReadService<TDto, TListDto, TGetListInput>
         where TEntity : class, IEntity
-        where TDto : class, IBaseDto
-        where TListDto : class, IBaseDto
+        where TDto : class, IDto
+        where TListDto : class, IDto
         where TGetListInput : GetPageDto
     {
         protected IRepository<TEntity> Repository { get; }
@@ -48,11 +50,13 @@ namespace Sampan.Application
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public virtual async Task<PageDto<TListDto>> GetAsync(TGetListInput input)
+        public virtual async Task<PageResultDto<TListDto>> GetAsync(TGetListInput input)
         {
             var query = CreateFilteredQuery(input);
 
             query = ApplySorting(query, input);
+
+            query = DefaultSorting(query);
 
             var pageEntity = await query.Count(out var total).Page(input.Index, input.Size).ToListAsync();
 
@@ -70,21 +74,29 @@ namespace Sampan.Application
         }
 
         /// <summary>
-        /// 排序逻辑
+        /// 请求排序，以外链接表字段为排序条件是在具体实现中重写
         /// </summary>
         /// <param name="query"></param>
         /// <param name="input"></param>
         /// <returns></returns>
-        protected ISelect<TEntity> ApplySorting(ISelect<TEntity> query, TGetListInput input)
+        protected virtual ISelect<TEntity> ApplySorting(ISelect<TEntity> query, TGetListInput input)
         {
             query.OrderByPropertyNameIf(!input.Sort.IsNullOrWhiteSpace(), input.Sort, input.Asc);
 
-            query.OrderByIf(typeof(TEntity).IsAssignableFrom(typeof(ISortEntity)), a => (a as ISortEntity).Sort);
+            return query;
+        }
 
-            var createTimeSort = typeof(TEntity).IsAssignableFrom(typeof(ICreateEntity)) ||
-                                 typeof(TEntity).GetProperties().Any(a => a.Name == "CreateTime");
+        /// <summary>
+        /// 默认排序
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        protected ISelect<TEntity> DefaultSorting(ISelect<TEntity> query)
+        {
+            query.OrderByIf(typeof(ISortEntity).IsAssignableFrom(typeof(TEntity)), a => (a as ISortEntity).Sort);
 
-            query.OrderByPropertyNameIf(createTimeSort, "CreateTime", false);
+            query.OrderByIf(typeof(ICreateEntity).IsAssignableFrom(typeof(TEntity)),
+                a => (a as ICreateEntity).CreateTime, true);
 
             return query;
         }
@@ -95,9 +107,9 @@ namespace Sampan.Application
         /// <param name="total"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        protected async Task<PageDto<TListDto>> GetPageDto(long total, List<TEntity> data)
+        protected async Task<PageResultDto<TListDto>> GetPageDto(long total, List<TEntity> data)
         {
-            var result = new PageDto<TListDto>();
+            var result = new PageResultDto<TListDto>();
 
             if (data.Any())
             {

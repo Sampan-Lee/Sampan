@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Longbow.Security.Cryptography;
+using Sampan.Common.Extension;
 using Sampan.Common.Util;
 using Sampan.Infrastructure.Repository;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Sampan.Domain.System
 {
@@ -19,8 +21,7 @@ namespace Sampan.Domain.System
             [NotNull] string loginName,
             [CanBeNull] string password,
             [NotNull] string name,
-            [NotNull] string phone,
-            [CanBeNull] bool? isAdmin
+            [NotNull] string phone
         )
         {
             Check.NotNullOrWhiteSpace(loginName, nameof(loginName));
@@ -44,9 +45,50 @@ namespace Sampan.Domain.System
                 Password = LgbCryptography.ComputeHash(password ?? loginName, passwordSalt), //创建用户时，密码跟用户名一致
                 Name = name,
                 Phone = phone,
-                IsAdmin = isAdmin ?? false,
                 IsEnable = true
             };
+        }
+
+        public async Task ChangeNameAsync([NotNull] AdminUser user, [NotNull] string newName)
+        {
+            Check.NotNull(user, nameof(user));
+            Check.NotNullOrWhiteSpace(newName, nameof(newName));
+
+            var existingUser = await _repository.Where(a => a.Name == newName).FirstAsync();
+            if (existingUser != null && existingUser.Id != user.Id)
+            {
+                throw new AdminUserAlreadyExistsException(newName);
+            }
+
+            user.ChangeName(newName);
+        }
+
+        public async Task ChangePhoneAsync([NotNull] AdminUser user, [NotNull] string newPhone)
+        {
+            Check.NotNull(user, nameof(user));
+            Check.NotNullOrWhiteSpace(newPhone, nameof(newPhone));
+
+            var existingUser = await _repository.Where(a => a.Phone == newPhone).FirstAsync();
+            if (existingUser != null && existingUser.Id != user.Id)
+            {
+                throw new AdminUserAlreadyExistsSamePhoneException(newPhone);
+            }
+
+            user.ChangePhone(newPhone);
+        }
+
+        public async Task ChangeEmailAsync(AdminUser user, string newEmail)
+        {
+            Check.NotNull(user, nameof(user));
+            if (newEmail.IsNullOrEmpty()) return;
+
+            var existingUser = await _repository.Where(a => a.Email == newEmail).FirstAsync();
+            if (existingUser != null && existingUser.Id != user.Id)
+            {
+                throw new AdminUserAlreadyExistsSameEmailException(newEmail);
+            }
+
+            user.ChangeEmail(newEmail);
         }
     }
 }

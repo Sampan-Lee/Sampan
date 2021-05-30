@@ -13,8 +13,8 @@ namespace Sampan.Service.Contract
     /// <typeparam name="TUpdateInput"></typeparam>
     public interface ICrudService<TDto, TListDto, in TGetListInput, in TCreateInput, in TUpdateInput> :
         IReadService<TDto, TListDto, TGetListInput>
-        where TDto : class, IBaseDto
-        where TListDto : class, IBaseDto
+        where TDto : class, IDto
+        where TListDto : class, IDto
         where TGetListInput : GetPageDto
     {
         /// <summary>

@@ -3,13 +3,13 @@ using Sampan.Public.Dto;
 namespace Sampan.Service.Contract.System.Menus
 {
     /// <summary>
-    /// 获取菜单列表业务实体
+    /// 绑定权限业务实体
     /// </summary>
-    public class GetMenuListDto : GetSortDto
+    public class BindPermissionDto : Dto
     {
         /// <summary>
-        /// 菜单名称
+        /// 权限ID
         /// </summary>
-        public string Name { get; set; }
+        public int? PermissionId { get; set; }
     }
 }

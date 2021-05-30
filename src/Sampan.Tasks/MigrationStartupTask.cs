@@ -49,8 +49,8 @@ namespace Sampan.Tasks
 
             await deletePermission(allPermissions, permissions);
 
-            List<Permission> insertDefaultPermissions = new List<Permission>();
-            List<Permission> updateDefaultPermissions = new List<Permission>();
+            List<Permission> insertModulePermissions = new List<Permission>();
+            List<Permission> updateModulePermissions = new List<Permission>();
             permissions.Where(a => a.ParentName.IsNullOrWhiteSpace()).ToList().ForEach(r =>
             {
                 var query = allPermissions.Where(u => u.Module == r.Module)
@@ -59,7 +59,7 @@ namespace Sampan.Tasks
 
                 if (!query.Any())
                 {
-                    insertDefaultPermissions.Add(new Permission
+                    insertModulePermissions.Add(new Permission
                     {
                         Module = r.Module,
                         Name = r.Name,
@@ -72,54 +72,101 @@ namespace Sampan.Tasks
                     {
                         var permission = query.FirstOrDefault();
                         permission.DisplayName = r.DisplayName;
-                        updateDefaultPermissions.Add(permission);
+                        updateModulePermissions.Add(permission);
                     }
                 }
             });
 
-            await _permissionRepository.InsertAsync(insertDefaultPermissions);
-            _logger.LogInformation($"新增了{insertDefaultPermissions.Count}条基础权限数据");
+            await _permissionRepository.InsertAsync(insertModulePermissions);
+            _logger.LogInformation($"新增了{insertModulePermissions.Count}条菜单权限数据");
 
-            await _permissionRepository.UpdateAsync(updateDefaultPermissions);
-            _logger.LogInformation($"修改了{updateDefaultPermissions.Count}条基础权限数据");
+            await _permissionRepository.UpdateAsync(updateModulePermissions);
+            _logger.LogInformation($"修改了{updateModulePermissions.Count}条菜单权限数据");
 
-            var allParentPermissions = await _permissionRepository.Where(a => !a.ParentId.HasValue).ToListAsync();
-            List<Permission> insertItemPermissions = new List<Permission>();
-            List<Permission> updateItemPermissions = new List<Permission>();
-            permissions.Where(a => !a.ParentName.IsNullOrWhiteSpace()).ToList().ForEach(r =>
-            {
-                var query = allPermissions.Where(u => u.Module == r.Module)
-                    .Where(u => u.Name == r.Name)
-                    .Where(u => u.ParentId.HasValue)
-                    .Where(u => allParentPermissions.FirstOrDefault(a => a.Id == u.ParentId.Value)?.Name ==
-                                r.ParentName);
-                if (!query.Any())
+            var allModulePermissions = await _permissionRepository.Where(a => !a.ParentId.HasValue).ToListAsync();
+            List<Permission> insertMenuPermissions = new List<Permission>();
+            List<Permission> updateMenuPermissions = new List<Permission>();
+            permissions.Where(a => !a.ParentName.IsNullOrWhiteSpace())
+                .Where(a => allModulePermissions.Exists(m => m.Name == a.ParentName))
+                .ToList()
+                .ForEach(r =>
                 {
-                    insertItemPermissions.Add(new Permission
+                    var query = allPermissions.Where(u => u.Module == r.Module)
+                        .Where(u => u.Name == r.Name)
+                        .Where(u => u.ParentId.HasValue)
+                        .Where(u => allModulePermissions.FirstOrDefault(a => a.Id == u.ParentId.Value)?.Name ==
+                                    r.ParentName);
+                    if (!query.Any())
                     {
-                        ParentId = allParentPermissions
-                            .FirstOrDefault(a => a.Module == r.Module && a.Name == r.ParentName).Id,
-                        Module = r.Module,
-                        Name = r.Name,
-                        DisplayName = r.DisplayName
-                    });
-                }
-                else
-                {
-                    if (query.Any(u => u.DisplayName != r.DisplayName))
-                    {
-                        var permission = query.FirstOrDefault();
-                        permission.DisplayName = r.DisplayName;
-                        updateItemPermissions.Add(permission);
+                        insertMenuPermissions.Add(new Permission
+                        {
+                            ParentId = allModulePermissions
+                                .FirstOrDefault(a => a.Module == r.Module && a.Name == r.ParentName).Id,
+                            Module = r.Module,
+                            Name = r.Name,
+                            DisplayName = r.DisplayName
+                        });
                     }
-                }
-            });
+                    else
+                    {
+                        if (query.Any(u => u.DisplayName != r.DisplayName))
+                        {
+                            var permission = query.FirstOrDefault();
+                            permission.DisplayName = r.DisplayName;
+                            updateMenuPermissions.Add(permission);
+                        }
+                    }
+                });
+            
+            await _permissionRepository.InsertAsync(insertMenuPermissions);
+            _logger.LogInformation($"新增了{insertMenuPermissions.Count}条菜单权限数据");
+            
+            await _permissionRepository.UpdateAsync(updateMenuPermissions);
+            _logger.LogInformation($"新增了{updateMenuPermissions.Count}条菜单权限数据");
 
-            await _permissionRepository.InsertAsync(insertItemPermissions);
-            _logger.LogInformation($"新增了{insertItemPermissions.Count}条权限子项数据");
-
-            await _permissionRepository.UpdateAsync(updateItemPermissions);
-            _logger.LogInformation($"新增了{updateItemPermissions.Count}条权限子项数据");
+            // var allMenuPermissions = await _permissionRepository
+            //     .Where(a => a.ParentId.HasValue)
+            //     .Where(a => !a.Parent.ParentId.HasValue)
+            //     .ToListAsync();
+            // List<Permission> insertOperationPermissions = new List<Permission>();
+            // List<Permission> updateOperationPermissions = new List<Permission>();
+            // permissions.Where(a => !a.ParentName.IsNullOrWhiteSpace())
+            //     .Where(a => allMenuPermissions.Exists(m => m.Name == a.ParentName))
+            //     .ToList()
+            //     .ForEach(r =>
+            //     {
+            //         var query = allPermissions.Where(u => u.Module == r.Module)
+            //             .Where(u => u.Name == r.Name)
+            //             .Where(u => u.ParentId.HasValue)
+            //             .Where(u => allMenuPermissions.FirstOrDefault(a => a.Id == u.ParentId.Value)?.Name ==
+            //                         r.ParentName);
+            //         if (!query.Any())
+            //         {
+            //             insertOperationPermissions.Add(new Permission
+            //             {
+            //                 ParentId = allMenuPermissions
+            //                     .FirstOrDefault(a => a.Module == r.Module && a.Name == r.ParentName).Id,
+            //                 Module = r.Module,
+            //                 Name = r.Name,
+            //                 DisplayName = r.DisplayName
+            //             });
+            //         }
+            //         else
+            //         {
+            //             if (query.Any(u => u.DisplayName != r.DisplayName))
+            //             {
+            //                 var permission = query.FirstOrDefault();
+            //                 permission.DisplayName = r.DisplayName;
+            //                 updateOperationPermissions.Add(permission);
+            //             }
+            //         }
+            //     });
+            //
+            // await _permissionRepository.InsertAsync(insertOperationPermissions);
+            // _logger.LogInformation($"新增了{insertOperationPermissions.Count}条功能权限数据");
+            //
+            // await _permissionRepository.UpdateAsync(updateOperationPermissions);
+            // _logger.LogInformation($"新增了{updateOperationPermissions.Count}条功能权限数据");
         }
 
         private async Task deletePermission(List<Permission> allPermissions,

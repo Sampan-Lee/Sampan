@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Sampan.Public.Dto;
 
 namespace Sampan.Service.Contract.System.SystemUsers
 {

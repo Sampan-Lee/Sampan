@@ -20,6 +20,16 @@ namespace Sampan.Common.Extension
         #region string
 
         /// <summary>
+        /// 首字母大写/适用于前端小驼峰方式传参和C#大驼峰属性名对比
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToInitialUpper(this string str)
+        {
+            return str?.Substring(0, 1).ToUpper() + str?.Substring(1);
+        }
+
+        /// <summary>
         /// 判断字段不为空
         /// [null,""," "]
         /// </summary>

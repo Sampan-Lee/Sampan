@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using FreeSql.DataAnnotations;
-using Sampan.Public.Entity;
+using JetBrains.Annotations;
+using Sampan.Common.Util;
 
 namespace Sampan.Domain.System
 {
@@ -47,14 +48,27 @@ namespace Sampan.Domain.System
         public string Avatar { get; set; }
 
         /// <summary>
-        /// 是否管理员
-        /// </summary>
-        public bool IsAdmin { get; set; }
-
-        /// <summary>
         /// 用户角色信息
         /// </summary>
         [Navigate(ManyToMany = typeof(UserRole))]
         public virtual ICollection<Role> Roles { get; set; }
+
+        internal AdminUser ChangeName([NotNull] string name)
+        {
+            Name = Check.NotNullOrWhiteSpace(name, nameof(name));
+            return this;
+        }
+
+        internal AdminUser ChangePhone([NotNull] string phone)
+        {
+            Phone = Check.NotNullOrWhiteSpace(phone, nameof(phone));
+            return this;
+        }
+
+        internal AdminUser ChangeEmail([CanBeNull] string email)
+        {
+            Email = email;
+            return this;
+        }
     }
 }

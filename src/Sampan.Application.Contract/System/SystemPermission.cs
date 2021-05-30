@@ -8,12 +8,12 @@ namespace Sampan.Service.Contract.System
         /// <summary>
         /// 模块名称
         /// </summary>
-        private const string Module = "System";
+        public const string Module = "System";
 
         /// <summary>
         /// 用户权限
         /// </summary>
-        public static class SystemUser
+        public static class AdminUser
         {
             /// <summary>
             /// 默认
@@ -106,6 +106,11 @@ namespace Sampan.Service.Contract.System
             /// 删除
             /// </summary>
             public const string Delete = Default + ".Delete";
+
+            /// <summary>
+            /// 设置状态
+            /// </summary>
+            public const string SetIsEnable = Default + ".SetIsEnable";
 
             /// <summary>
             /// 绑定权限

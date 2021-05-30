@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using FreeSql.DataAnnotations;
-using Sampan.Public.Entity;
 
 namespace Sampan.Domain.System
 {
@@ -10,7 +9,15 @@ namespace Sampan.Domain.System
     [Table(Name = "SystemRole")]
     public class Role : SortBaseEntity
     {
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// 描述
+        /// </summary>
+        public string Description { get; set; }
 
         [Navigate(ManyToMany = typeof(UserRole))]
         public virtual ICollection<AdminUser> Users { get; set; }

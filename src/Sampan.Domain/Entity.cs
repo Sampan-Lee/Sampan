@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using FreeSql.DataAnnotations;
+using Sampan.Domain.System;
+using Sampan.Public.Entity;
 
-namespace Sampan.Public.Entity
+namespace Sampan.Domain
 {
     public class Entity : IEntity
     {
@@ -45,12 +47,16 @@ namespace Sampan.Public.Entity
     {
         public int CreateUserId { get; set; }
         public DateTime CreateTime { get; set; }
+
+        [Navigate(nameof(CreateUserId))] public virtual AdminUser CreateUser { get; set; }
     }
 
     public class UpdateEntity : IUpdateEntity
     {
         public int UpdateUserId { get; set; }
         public DateTime UpdateTime { get; set; }
+
+        [Navigate(nameof(UpdateUserId))] public virtual AdminUser UpdateUser { get; set; }
     }
 
     public class SoftDeleteEntity : ISoftDeleteEntity
@@ -64,8 +70,22 @@ namespace Sampan.Public.Entity
     {
         public int? TenantId { get; set; }
         public int CreateUserId { get; set; }
+
+        /// <summary>
+        /// 创建人
+        /// </summary>
+        [Navigate(nameof(CreateUserId))]
+        public virtual AdminUser CreateUser { get; set; }
+
         public DateTime CreateTime { get; set; }
         public int UpdateUserId { get; set; }
+
+        /// <summary>
+        /// 修改人
+        /// </summary>
+        [Navigate(nameof(UpdateUserId))]
+        public virtual AdminUser UpdateUser { get; set; }
+
         public DateTime UpdateTime { get; set; }
         public bool IsDelete { get; set; }
         public int? DeleteUserId { get; set; }

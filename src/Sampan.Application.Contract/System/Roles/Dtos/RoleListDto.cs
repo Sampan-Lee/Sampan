@@ -5,7 +5,7 @@ namespace Sampan.Service.Contract.System.Roles
     /// <summary>
     /// 角色列表业务实体
     /// </summary>
-    public class RoleListDto : BaseDto
+    public class RoleListDto : SortBaseDto
     {
         /// <summary>
         /// 名称
@@ -13,8 +13,8 @@ namespace Sampan.Service.Contract.System.Roles
         public string Name { get; set; }
 
         /// <summary>
-        /// 排序
+        /// 描述
         /// </summary>
-        public int Sort { get; set; }
+        public string Description { get; set; }
     }
 }

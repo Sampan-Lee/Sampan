@@ -1,5 +1,4 @@
 using System;
-using Sampan.Public.Entity;
 
 namespace Sampan.Domain.Users
 {

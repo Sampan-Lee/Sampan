@@ -3,7 +3,7 @@ namespace Sampan.Public.Dto
     /// <summary>
     /// 
     /// </summary>
-    public class GetPageDto
+    public class GetPageDto : GetSortDto
     {
         /// <summary>
         /// 页数
@@ -14,15 +14,5 @@ namespace Sampan.Public.Dto
         /// 每页数量
         /// </summary>
         public int Size { get; set; }
-
-        /// <summary>
-        /// 排序列
-        /// </summary>
-        public string Sort { get; set; }
-
-        /// <summary>
-        /// 是否正序
-        /// </summary>
-        public bool Asc { get; set; }
     }
 }

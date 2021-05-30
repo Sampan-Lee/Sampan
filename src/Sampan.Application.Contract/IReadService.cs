@@ -10,8 +10,8 @@ namespace Sampan.Service.Contract
     /// <typeparam name="TListDto"></typeparam>
     /// <typeparam name="TGetListInput"></typeparam>
     public interface IReadService<TDto, TListDto, in TGetListInput>
-        where TDto : class, IBaseDto
-        where TListDto : class, IBaseDto
+        where TDto : class, IDto
+        where TListDto : class, IDto
         where TGetListInput : GetPageDto
     {
         /// <summary>
@@ -26,6 +26,6 @@ namespace Sampan.Service.Contract
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<PageDto<TListDto>> GetAsync(TGetListInput input);
+        Task<PageResultDto<TListDto>> GetAsync(TGetListInput input);
     }
 }

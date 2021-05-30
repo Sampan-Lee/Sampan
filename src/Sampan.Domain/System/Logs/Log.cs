@@ -1,6 +1,5 @@
 using System;
 using FreeSql.DataAnnotations;
-using Sampan.Public.Entity;
 
 namespace Sampan.Domain.System
 {

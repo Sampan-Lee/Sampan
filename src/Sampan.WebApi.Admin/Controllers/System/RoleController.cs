@@ -31,22 +31,31 @@ namespace Sampan.WebApi.Admin.Controllers.System
         }
 
         [HttpGet]
-        public async Task<JsonResultModel<PageDto<RoleListDto>>> GetAsync([FromQuery] GetRoleListDto input)
+        public async Task<JsonResultModel<PageResultDto<RoleListDto>>> GetAsync([FromQuery] GetRoleListDto input)
         {
             var result = await _service.GetAsync(input);
             return result.ToSuccess();
         }
 
         [HttpGet]
-        [Route("permission")]
-        public async Task<JsonResultModel<List<RolePermissionDto>>> GetPermissionAsync([FromQuery] int id)
+        [Route("dictionary")]
+        public async Task<JsonResultModel<List<DropdownDto>>> GetDictionaryAsync()
+        {
+            var result = await _service.GetDictionaryAsync();
+            return result.ToSuccess();
+        }
+
+
+        [HttpGet]
+        [Route("{id}/permission")]
+        public async Task<JsonResultModel<List<int>>> GetPermissionAsync([FromRoute] int id)
         {
             var result = await _service.GetPermissionAsync(id);
             return result.ToSuccess();
         }
 
         [HttpPost]
-        [Route("permission")]
+        [Route("permission:assign")]
         [Authorize(SystemPermission.Role.AssignPermission)]
         public async Task<JsonResultModel<bool>> AssignPermissionAsync([FromBody] AssignPermissionDto input)
         {

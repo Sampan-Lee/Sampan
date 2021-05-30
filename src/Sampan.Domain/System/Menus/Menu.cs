@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using FreeSql.DataAnnotations;
-using Sampan.Public.Entity;
 
 namespace Sampan.Domain.System
 {
@@ -34,6 +33,11 @@ namespace Sampan.Domain.System
         /// 路径
         /// </summary>
         public string Path { get; set; }
+
+        /// <summary>
+        /// 页面组件
+        /// </summary>
+        public string Component { get; set; }
 
         /// <summary>
         /// 父级菜单

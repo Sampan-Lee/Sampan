@@ -11,7 +11,7 @@ using Sampan.Domain.System;
 using Sampan.Infrastructure.Repository;
 using Sampan.Infrastructure.Sms;
 using Sampan.Service.Contract.Account.AdminAccounts;
-using Sampan.Service.Contract.System.Menus;
+using Sampan.Service.Contract.System.Permissions;
 using Sampan.Service.Contract.System.SystemUsers;
 
 namespace Sampa.Application.Account.AdminAccounts
@@ -23,18 +23,21 @@ namespace Sampa.Application.Account.AdminAccounts
     {
         private const string _adminLoginCaptchaCacheKey = "admin_login_captcha_";
         private readonly IRepository<AdminUser> _userRepository;
-        private readonly IRepository<Role> _roleRepository;
         private readonly IRepository<Menu> _menuRepository;
+        private readonly IAdminUserService _userService;
+        private readonly IPermissionService _permissionService;
         private readonly ISmsService _smsService;
 
         public AdminAccountService(IRepository<AdminUser> userRepository,
-            IRepository<Role> roleRepository,
             IRepository<Menu> menuRepository,
+            IAdminUserService userService,
+            IPermissionService permissionService,
             ISmsService smsService)
         {
             _userRepository = userRepository;
-            _roleRepository = roleRepository;
+            _permissionService = permissionService;
             _menuRepository = menuRepository;
+            _userService = userService;
             _smsService = smsService;
         }
 
@@ -43,7 +46,7 @@ namespace Sampa.Application.Account.AdminAccounts
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        public async Task<bool> SendCaptcha(string phone)
+        public async Task<bool> SendCaptchaAsync(string phone)
         {
             var cacheKey = _adminLoginCaptchaCacheKey + phone;
             var exist = await Cache.ExistAsync(cacheKey);
@@ -91,31 +94,49 @@ namespace Sampa.Application.Account.AdminAccounts
             return Mapper.Map<AdminLoginDto>(user);
         }
 
+        /// <summary>
+        /// 获取用户信息
+        /// </summary>
+        /// <returns></returns>
         public async Task<AdminUserDto> GetUserAsync()
         {
-            var user = await _userRepository.GetAsync(CurrentUser.Id);
-            return Mapper.Map<AdminUserDto>(user);
+            return await _userService.GetAsync(CurrentUser.Id);
         }
 
         /// <summary>
-        /// 获取用户菜单
+        /// 获取用户菜单,只支持三级
         /// </summary>
         /// <returns></returns>
-        public async Task<List<UserMenuDto>> GetMenuAsync()
+        public async Task<List<AdminMenuDto>> GetMenuAsync()
         {
-            var permission = await GetPermissionAsync(CurrentUser.Id);
+            var permission = await _permissionService.GetAsync(CurrentUser.Id);
             if (permission.IsNullOrEmpty()) return null;
 
-            var permissionIds = permission.Where(a => !a.ParentId.HasValue).Select(a => a.Id);
+            var permissionIds = permission.Where(a => !a.ParentId.HasValue).Select(a => a.Id).ToList();
 
             var menus = await _menuRepository
-                .Where(a => !a.PermissionId.HasValue || permissionIds.Contains(a.PermissionId.Value))
+                .Where(a => permissionIds.Contains(a.PermissionId.Value)
+                            || (!a.PermissionId.HasValue && a.Id == 1)
+                            || a.Children.AsSelect().Any(b => permissionIds.Contains(b.PermissionId.Value))
+                            || a.Children.AsSelect().Any(c =>
+                                c.Children.AsSelect().Any(d => permissionIds.Contains(d.PermissionId.Value)))
+                )
                 .OrderBy(a => a.Sort)
                 .ToTreeListAsync();
 
-            var result = Mapper.Map<List<UserMenuDto>>(menus);
+            var result = Mapper.Map<List<AdminMenuDto>>(menus);
 
             return result;
+        }
+
+        /// <summary>
+        /// 获取用户操作权限
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<string>> GetPermissionAsync()
+        {
+            var permission = await _permissionService.GetAsync(CurrentUser.Id);
+            return permission.Select(a => a.Name).ToList();
         }
 
         /// <summary>
@@ -126,48 +147,9 @@ namespace Sampa.Application.Account.AdminAccounts
         /// <returns></returns>
         public async Task<bool> CheckPermissionAsync(int userId, string permission)
         {
-            var permissions = await GetPermissionAsync(userId);
+            var permissions = await _permissionService.GetAsync(userId);
             var result = permissions?.Any(a => a.Name == permission) ?? false;
             return result;
-        }
-
-        /// <summary>
-        /// 获取用户权限
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="permission"></param>
-        /// <returns></returns>
-        private async Task<List<Permission>> GetPermissionAsync(int userId)
-        {
-            var cacheKey = SystemCacheKeyPrefixDefinition.UserPermission + userId;
-            var userPermission = await Cache.GetAsync<List<Permission>>(cacheKey);
-            if (userPermission == null)
-            {
-                var user = await _userRepository.Select
-                    .IncludeMany(a => a.Roles)
-                    .Where(a => a.Id == userId)
-                    .FirstAsync();
-
-                var roleIds = user.Roles.Select(b => b.Id).ToList();
-                if (roleIds.IsNullOrEmpty()) return null;
-
-                var roles = await _roleRepository.Select
-                    .IncludeMany(a => a.Permissions)
-                    .Where(a => roleIds.Contains(a.Id))
-                    .ToListAsync();
-
-                userPermission = roles.Select(a => a.Permissions)
-                    .SelectMany(a => a).ToList();
-                if (userPermission.IsNullOrEmpty()) return null;
-
-                /*
-                 * 用户权限校验伴随着每一次接口请求，并发高，IO频繁，存入缓存提升效率
-                 * 在用户分配角色和角色分配权限时，更新缓存
-                 */
-                await Cache.SetAsync(cacheKey, userPermission);
-            }
-
-            return userPermission;
         }
     }
 }

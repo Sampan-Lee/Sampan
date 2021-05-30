@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sampan.Service.Contract.System.Menus;
 using Sampan.Service.Contract.System.SystemUsers;
 
 namespace Sampan.Service.Contract.Account.AdminAccounts
@@ -15,7 +14,7 @@ namespace Sampan.Service.Contract.Account.AdminAccounts
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        Task<bool> SendCaptcha(string phone);
+        Task<bool> SendCaptchaAsync(string phone);
 
         /// <summary>
         /// 用户登录
@@ -34,7 +33,13 @@ namespace Sampan.Service.Contract.Account.AdminAccounts
         /// 获取用户菜单
         /// </summary>
         /// <returns></returns>
-        Task<List<UserMenuDto>> GetMenuAsync();
+        Task<List<AdminMenuDto>> GetMenuAsync();
+
+        /// <summary>
+        /// 获取用户操作权限
+        /// </summary>
+        /// <returns></returns>
+        Task<List<string>> GetPermissionAsync();
 
         /// <summary>
         /// 校验账号权限

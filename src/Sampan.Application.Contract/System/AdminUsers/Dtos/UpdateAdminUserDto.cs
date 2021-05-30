@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Sampan.Service.Contract.System.SystemUsers
 {
     /// <summary>
@@ -5,16 +7,6 @@ namespace Sampan.Service.Contract.System.SystemUsers
     /// </summary>
     public class UpdateAdminUserDto
     {
-        /// <summary>
-        /// 用户名/登录名
-        /// </summary>
-        public string LoginName { get; set; }
-
-        /// <summary>
-        /// 密码
-        /// </summary>
-        public string Password { get; set; }
-
         /// <summary>
         /// 姓名
         /// </summary>
@@ -31,8 +23,8 @@ namespace Sampan.Service.Contract.System.SystemUsers
         public string Email { get; set; }
 
         /// <summary>
-        /// 头像
+        /// 角色ID集合
         /// </summary>
-        public string Avatar { get; set; }
+        public List<int> RoleIds { get; set; }
     }
 }

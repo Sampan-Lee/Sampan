@@ -1,22 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 using Sampan.Domain.Shared.System.Menu;
+using Sampan.Public.Dto;
 
 namespace Sampan.Service.Contract.System.Menus
 {
     /// <summary>
     /// 修改菜单业务实体
     /// </summary>
-    public class UpdateMenuDto
+    public class UpdateMenuDto : SortDto
     {
         /// <summary>
         /// 父级ID
         /// </summary>
         public int? ParentId { get; set; }
-
-        /// <summary>
-        /// 权限ID
-        /// </summary>
-        public int? PermissionId { get; set; }
 
         /// <summary>
         /// 名称
@@ -34,5 +30,10 @@ namespace Sampan.Service.Contract.System.Menus
         /// 路径
         /// </summary>
         public string Path { get; set; }
+
+        /// <summary>
+        /// 视图组件
+        /// </summary>
+        public string Component { get; set; }
     }
 }

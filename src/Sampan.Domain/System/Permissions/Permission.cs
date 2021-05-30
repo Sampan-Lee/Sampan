@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using FreeSql.DataAnnotations;
-using Sampan.Public.Entity;
 
 namespace Sampan.Domain.System
 {
@@ -32,5 +31,9 @@ namespace Sampan.Domain.System
 
         [Navigate(ManyToMany = typeof(RolePermission))]
         public virtual ICollection<Role> Roles { get; set; }
+
+        [Navigate(nameof(ParentId))] public virtual Permission Parent { get; set; }
+
+        [Navigate(nameof(ParentId))] public virtual ICollection<Permission> Children { get; set; }
     }
 }

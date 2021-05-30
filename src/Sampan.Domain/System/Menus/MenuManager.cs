@@ -19,7 +19,7 @@ namespace Sampan.Domain.System
             [CanBeNull] int? permissionId,
             [NotNull] string name,
             [CanBeNull] string icon,
-            [NotNull] string path)
+            [CanBeNull] string path)
         {
             Check.NotNullOrWhiteSpace(name, nameof(name));
 
