@@ -23,16 +23,20 @@ namespace Sampan.WebExtension.Permission
 
             if (!userId.IsNullOrWhiteSpace())
             {
-                if (context.User.IsAdminUser().Value)
+                if (context.User.IsSuperAdmin().Value)
                 {
                     context.Succeed(requirement);
-                    return Task.CompletedTask;
                 }
-
-                var check = _accountService.CheckPermissionAsync(int.Parse(userId!), requirement.Name).Result;
-                if (check)
+                else
                 {
-                    context.Succeed(requirement);
+                    if (context.User.IsAdminUser().Value)
+                    {
+                        var check = _accountService.CheckPermissionAsync(int.Parse(userId!), requirement.Name).Result;
+                        if (check)
+                        {
+                            context.Succeed(requirement);
+                        }
+                    }
                 }
             }
 

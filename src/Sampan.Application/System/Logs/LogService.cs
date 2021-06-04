@@ -15,9 +15,10 @@ namespace Sampan.Application.System.Logs
 
         protected override ISelect<Log> CreateFilteredQuery(GetLogListDto input)
         {
-            return Repository.Select
+            return Repository.Include(a => a.AdminUser)
                 .WhereIf(!input.Application.IsNullOrWhiteSpace(), a => a.Application == input.Application)
-                .WhereIf(!input.TraceId.IsNullOrWhiteSpace(), a => a.TraceId == input.TraceId);
+                .WhereIf(!input.TraceId.IsNullOrWhiteSpace(), a => a.TraceId == input.TraceId)
+                .WhereIf(!input.UserName.IsNullOrWhiteSpace(), a => a.AdminUser.Name == input.UserName);
         }
     }
 }

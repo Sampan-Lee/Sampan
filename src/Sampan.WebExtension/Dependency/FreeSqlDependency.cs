@@ -23,14 +23,11 @@ namespace Sampan.WebExtension.Dependency
             fsql.Aop.CurdAfter += (s, e) =>
             {
                 Console.WriteLine(e.Sql);
-                LogHelper.Debug(
-                    $"ManagedThreadId:{Thread.CurrentThread.ManagedThreadId}: FullName:{e.EntityType.FullName}" +
-                    $" ElapsedMilliseconds:{e.ElapsedMilliseconds}ms, {e.Sql}");
+                LogHelper.Info(e.Sql);
 
                 if (e.ElapsedMilliseconds > 200)
                 {
-                    //记录日志
-                    //发送短信给负责人
+                    LogHelper.Warning("Sql执行超时，请注意查看");
                 }
             };
 

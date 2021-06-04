@@ -58,8 +58,7 @@ namespace Sampan.Service.Contract.System
                     SystemPermission.Log.Default,
                     new Dictionary<string, string>
                     {
-                        {SystemPermission.Log.Default, "日志看板"},
-                        {SystemPermission.Log.Export, "导出"},
+                        {SystemPermission.Log.Default, "系统日志"},
                     }
                 }
             };

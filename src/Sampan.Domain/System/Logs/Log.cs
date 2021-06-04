@@ -68,5 +68,11 @@ namespace Sampan.Domain.System
         /// 创建日期
         /// </summary>
         public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 用户
+        /// </summary>
+        [Navigate(nameof(UserId))]
+        public virtual AdminUser AdminUser { get; set; }
     }
 }

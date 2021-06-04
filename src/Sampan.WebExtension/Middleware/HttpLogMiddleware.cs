@@ -94,9 +94,6 @@ namespace Sampan.WebExtension.Middleware
             {
                 Parallel.For(0, 1, e =>
                 {
-                    //不单独记录
-                    //LogLock.OutSql2Log("RequestResponseLog", new string[] { "Request Data:", content });
-
                     LogHelper.Info(String.Join("\r\n",
                         new string[] {"Request Data:", content}));
                 });

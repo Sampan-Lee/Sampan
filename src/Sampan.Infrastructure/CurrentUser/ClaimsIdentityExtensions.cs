@@ -28,6 +28,17 @@ namespace Sampan.Infrastructure.CurrentUser
             return bool.Parse(isAdminOrNull.Value);
         }
 
+        public static bool? IsSuperAdmin(this ClaimsPrincipal principal)
+        {
+            Claim isAdminOrNull = principal.Claims.FirstOrDefault(c => c.Type == SampanClaimTypes.IsSuperAdmin);
+            if (isAdminOrNull == null || isAdminOrNull.Value.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            return bool.Parse(isAdminOrNull.Value);
+        }
+
         public static string FindUserName(this ClaimsPrincipal principal)
         {
             Claim userNameOrNull = principal.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name);

@@ -47,6 +47,7 @@ namespace Sampan.WebApi.Admin.Controllers.System
                 claims.Add(new Claim(ClaimTypes.Sid, loginUser.Id.ToString()));
                 claims.Add(new Claim(ClaimTypes.Name, loginUser.Name));
                 claims.Add(new Claim(SampanClaimTypes.IsAdmin, true.ToString()));
+                claims.Add(new Claim(SampanClaimTypes.IsSuperAdmin, (loginUser.Id == 1).ToString()));
                 //查询出用户对应的权限角色  
                 token = JWTService.GetToken(claims);
             }

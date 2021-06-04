@@ -16,7 +16,6 @@ namespace Sampan.WebExtension.Permission
             if (authorizeResult.Challenged)
             {
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = HttpStatusCode.Unauthorized;
                 await context.Response.WriteAsync(
                     JsonConvert.SerializeObject(new ApiResponse(HttpStatusCode.Unauthorized).JsonResultModel));
                 return;
@@ -25,7 +24,6 @@ namespace Sampan.WebExtension.Permission
             if (authorizeResult.Forbidden)
             {
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = HttpStatusCode.Forbidden;
                 await context.Response.WriteAsync(
                     JsonConvert.SerializeObject(new ApiResponse(HttpStatusCode.Forbidden).JsonResultModel));
                 return;

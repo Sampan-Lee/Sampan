@@ -16,5 +16,10 @@ namespace Sampan.Service.Contract.System.Logs
         /// 请求链路ID
         /// </summary>
         public string TraceId { get; set; }
+        
+        /// <summary>
+        /// 请求链路ID
+        /// </summary>
+        public string UserName { get; set; }
     }
 }

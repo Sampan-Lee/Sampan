@@ -51,10 +51,6 @@ namespace Sampan.WebApi.Admin
 
             app.UseCors();
 
-            app.UseNlog();
-
-            app.UseHttpLog();
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -62,6 +58,10 @@ namespace Sampan.WebApi.Admin
             app.UseAuthentication();
 
             app.UseAuthorization();
+            
+            app.UseNlog();
+
+            app.UseHttpLog();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization(); });
         }

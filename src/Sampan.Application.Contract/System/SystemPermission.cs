@@ -127,11 +127,6 @@ namespace Sampan.Service.Contract.System
             /// 默认
             /// </summary>
             public const string Default = Module + ".Log";
-
-            /// <summary>
-            /// 默认
-            /// </summary>
-            public const string Export = Default + ".Export";
         }
     }
 }
